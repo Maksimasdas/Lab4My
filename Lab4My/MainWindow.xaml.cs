@@ -133,10 +133,10 @@ namespace Lab4My
                 return;
             }
 
-            bomb = new Airport.UserControl_Bomb(plane.GetXplane() + 40, plane.GetYplane() + 40, plane.GetSpeed() / 60.0);
+            bomb = new Airport.UserControl_Bomb(plane.GetXplane() + 40, plane.GetYplane() + 40, plane.GetSpeed()/2);
 
-            bomb.BombModel.X = plane.GetXplane() + 40;
-            bomb.BombModel.Y = plane.GetYplane() + 40;
+            bomb.BombModel.X = plane.GetXplane()+20;
+            bomb.BombModel.Y = plane.GetYplane()+10;
 
             canvas.Children.Add(bomb);
         }

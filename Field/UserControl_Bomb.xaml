@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="Airport.UserControl_Bomb"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Airport"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="100">
+    <Grid x:Name="grid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20px"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="textblockSpeed" FontSize="18" Grid.Row="0" Foreground="Red"/>
+            <Image Source="/Airport;component/Images/Bombleft.png" Grid.Row="1" Width="100" Height="80"/>
+
+    </Grid>
+</UserControl>

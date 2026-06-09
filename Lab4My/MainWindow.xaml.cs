@@ -130,23 +130,13 @@ namespace Lab4My
         {
             if (bomb != null)
             {
-                Debug.WriteLine("❌ ВНИМАНИЕ: Бомба уже летит! Создание отменено.");
                 return;
             }
-            // === НОВОЕ: Логирование создания ===
-            Debug.WriteLine("✅ НАЧАЛО: Создание новой бомбы");
-            Debug.WriteLine($"   Позиция самолета: X={plane.GetXplane()}, Y={plane.GetYplane()}");
-            Debug.WriteLine($"   Скорость самолета: {plane.GetSpeed()}");
 
             bomb = new Airport.UserControl_Bomb(plane.GetXplane() + 40, plane.GetYplane() + 40, plane.GetSpeed() / 60.0);
 
             bomb.BombModel.X = plane.GetXplane() + 40;
             bomb.BombModel.Y = plane.GetYplane() + 40;
-
-            // === НОВОЕ: Логирование перед добавлением ===
-            Debug.WriteLine($"   Позиция бомбы: X={bomb.BombModel.X}, Y={bomb.BombModel.Y}");
-            Debug.WriteLine($"   Canvas размер: {canvas.ActualWidth}x{canvas.ActualHeight}");
-            Debug.WriteLine($"   Элементов на Canvas ДО добавления: {canvas.Children.Count}");
 
             canvas.Children.Add(bomb);
         }
@@ -157,8 +147,6 @@ namespace Lab4My
 
             double dt = 1.0 / 60.0;
             bomb.BombModel.Update(dt);
-
-            Debug.WriteLine($"   Бомба сейчас: X={bomb.BombModel.X}, Y={bomb.BombModel.Y}, Canvas высота={canvas.ActualHeight}");
 
             if (bomb.BombModel.Y > canvas.ActualHeight - 40)
             {

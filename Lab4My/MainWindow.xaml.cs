@@ -21,6 +21,7 @@ namespace Lab4My
         Airport.UserControl_Plane plane;
         Random random = new Random();
         Airport.UserControl_Bomb bomb;
+        Airport.UserControl_Target target;
 
         //таймер
         private Stopwatch stopwatch = new Stopwatch();
@@ -42,7 +43,7 @@ namespace Lab4My
             InitializeComponent();
             this.ResizeMode = ResizeMode.NoResize;
             StartGame();
-            start();
+            //start();
         }
         void StartGame()
         {
@@ -54,11 +55,20 @@ namespace Lab4My
         void start()
         {
             canvas.Children.Clear();
+
             plane = new Airport.UserControl_Plane(random.Next(20, 50));
+            target = new Airport.UserControl_Target();
+
             plane.SetXplane(0);      // ← Устанавливаем в модель
             plane.SetYplane(0);      //← ДО добавления на Canvas
-
+            double x = canvas.ActualWidth / 2 - target.ActualWidth / 2;
+            double y = canvas.ActualHeight - target.ActualHeight - 10;
+            target.SetXTarget(x);
+            target.SetYTarget(y-54);
             canvas.Children.Add(plane);
+            canvas.Children.Add(target);
+
+            canvas.UpdateLayout();
 
             stopwatch.Restart();
             lastUpdateTime = 0;
@@ -111,7 +121,7 @@ namespace Lab4My
                     double pixelsPerFrame = (speed / dx * 1000.00) / 60.0;
                     plane.SetXplane(plane.GetXplane() + pixelsPerFrame);
                 }
-                if(plane.GetXplane() > canvas.ActualWidth)
+                if(plane.GetXplane() > canvas.ActualWidth-75)
                 {
                     plane.SetXplane(0);
                 }
@@ -133,10 +143,10 @@ namespace Lab4My
                 return;
             }
 
-            bomb = new Airport.UserControl_Bomb(plane.GetXplane() + 40, plane.GetYplane() + 40, plane.GetSpeed()/2);
+            bomb = new Airport.UserControl_Bomb(plane.GetXplane() + 40, plane.GetYplane() + 40, plane.GetSpeed()/1.7);
 
-            bomb.BombModel.X = plane.GetXplane()+20;
-            bomb.BombModel.Y = plane.GetYplane()+10;
+            bomb.BombModel.X = plane.GetXplane() + 20;
+            bomb.BombModel.Y = plane.GetYplane() + 10;
 
             canvas.Children.Add(bomb);
         }
@@ -148,7 +158,7 @@ namespace Lab4My
             double dt = 1.0 / 60.0;
             bomb.BombModel.Update(dt);
 
-            if (bomb.BombModel.Y > canvas.ActualHeight - 40)
+            if (bomb.BombModel.Y > canvas.ActualHeight-59)
             {
                 canvas.Children.Remove(bomb );
                 bomb = null;
@@ -165,6 +175,29 @@ namespace Lab4My
         {
             DropBomb();
             //MessageBox.Show("Бомба создана!");
+        }
+
+        private void ButtonReset_Click(object sender, RoutedEventArgs e)
+        {
+            start();
+            canvas.Children.Remove(bomb);
+            bomb = null;
+        }
+
+        private void ButtonStart_Click(object sender, RoutedEventArgs e)
+        {
+            start();
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            stopwatch.Stop();
+
+            if (isRenderingSubscribed)
+            {
+                CompositionTarget.Rendering -= CompositionTarget_Rendering;
+                isRenderingSubscribed = false;
+            }
         }
     }
 }

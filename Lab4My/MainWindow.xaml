@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Lab4My"
         mc:Ignorable="d"
-        Title="MainWindow" Height="550" Width="1225" FontSize="28">
+        Title="MainWindow" Height="550" Width="1225" FontSize="28" Closed="MainWindow_Closed">
     <Grid x:Name="grid" ShowGridLines="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
@@ -16,8 +16,8 @@
                 <ImageBrush ImageSource="/MainImages/Fieldback.png"/>
             </Border.Background>
         </Border>
-        <Button Content="Start" Grid.Row="1" Width="200" Margin="0 20 500 20"/>
-        <Button Content="Reset" Grid.Row="1" Width="200" Margin="40 20 100 20"/>
+        <Button Content="Start" Grid.Row="1" Width="200" Margin="0 20 500 20" Click="ButtonStart_Click"/>
+        <Button Content="Reset" Grid.Row="1" Width="200" Margin="40 20 100 20" Click="ButtonReset_Click"/>
         <Button Content="Bomb" Grid.Row="1" Width="200" Margin="500 20 100 20" Click="Buttondropbomb_Click" />
     </Grid>
 </Window>

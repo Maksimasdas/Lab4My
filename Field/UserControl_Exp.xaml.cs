@@ -20,9 +20,32 @@ namespace Airport
     /// </summary>
     public partial class UserControl_Exp : UserControl
     {
+        Exp exp;
         public UserControl_Exp()
         {
             InitializeComponent();
+            exp = new Exp(GetExpX(), GetExpY());
+            this.DataContext = exp;
+        }
+
+        public void SetExpX(double x)
+        {
+            exp.X = x;
+        }
+
+        public void SetExpY(double y)
+        {
+            exp.Y = y;
+        }
+
+        public double GetExpX()
+        {
+            return exp.X;
+        }
+
+        public double GetExpY()
+        {
+            return exp.Y;
         }
     }
 }

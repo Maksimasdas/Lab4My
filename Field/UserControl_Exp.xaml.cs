@@ -24,28 +24,30 @@ namespace Airport
         public UserControl_Exp()
         {
             InitializeComponent();
-            exp = new Exp(GetExpX(), GetExpY());
+            exp = new Exp(0, 0);
             this.DataContext = exp;
         }
 
         public void SetExpX(double x)
         {
             exp.X = x;
+            Canvas.SetLeft(this, x);
         }
 
         public void SetExpY(double y)
         {
             exp.Y = y;
+            Canvas.SetTop(this, y);
         }
 
         public double GetExpX()
         {
-            return exp.X;
+            return exp?.X ?? 0; //проверка на случай нула
         }
 
         public double GetExpY()
         {
-            return exp.Y;
+            return exp?.Y ?? 0;
         }
     }
 }

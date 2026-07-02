@@ -48,7 +48,7 @@ namespace Airport
 
             Vy += Gravity * dt;
 
-            OnPropertyChanged(nameof(X)); //использовал nameof для безопасной привязки без использования "X" или чего-то в таком духе
+            OnPropertyChanged(nameof(X)); //использовал nameof для безопасной привязки без использования "X"
             OnPropertyChanged(nameof(Y));
         }
 

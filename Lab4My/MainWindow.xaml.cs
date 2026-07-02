@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Airport;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,21 +23,21 @@ namespace Lab4My
         Random random = new Random();
         Airport.UserControl_Bomb bomb;
         Airport.UserControl_Target target;
+        Airport.UserControl_Exp explosion;
 
         //таймер
         private Stopwatch stopwatch = new Stopwatch();
         private double lastUpdateTime = 0;
         private double lastSpeedUpdateTime = 0;
+        private Stopwatch explosionTimer = new Stopwatch(); //таймер для взрыва
 
         private const double UPDATE_INTERVAL = 1000;
         private const double SPEED_UPDATE_INTERVAL = 1000;
+        private const double EXPLOSION_DURATION = 800;
         private bool isRenderingSubscribed = false;
 
         float dx = 2000f; //изменение расстояния
-        bool flStart = false; //флаг, возможно тут не нужен
-        float Length = 1100f; //длинна полосы
-
-        
+        bool flStart = false; //флаг
 
         public MainWindow()
         {
@@ -95,19 +96,12 @@ namespace Lab4My
             if (currentTime - lastSpeedUpdateTime >= SPEED_UPDATE_INTERVAL)
             {
                 lastSpeedUpdateTime = currentTime;
-                UpdateSpeed();
-            }
-
-            // Проверяем финиши (каждые 1000 ms)
-            if (currentTime - lastUpdateTime >= UPDATE_INTERVAL) 
-            {
-                lastUpdateTime = currentTime;
-                CheckFinish(); //лишнее, потом удалю при наведении красоты
             }
 
             // Плавная анимация КАЖДЫЙ КАДР
             UpdatePlaneVisuals();
             UpdateBomb();
+            UpdateExplosion();
         }
 
         private void UpdatePlaneVisuals()
@@ -125,14 +119,6 @@ namespace Lab4My
                 {
                     plane.SetXplane(0);
                 }
-            }
-        }
-
-        private void UpdateSpeed()
-        {
-            if(plane != null)
-            {
-                plane.UpdateSpeed(random.Next(30, 80));
             }
         }
 
@@ -158,6 +144,15 @@ namespace Lab4My
             double dt = 1.0 / 60.0;
             bomb.BombModel.Update(dt);
 
+            if (CheckCollision(bomb.BombModel.X, bomb.BombModel.Y))
+            {
+                ShowExplosion(target.GetXTarget(), target.GetYTarget());
+
+                canvas.Children.Remove(bomb);
+                bomb = null;
+                return;
+            }
+
             if (bomb.BombModel.Y > canvas.ActualHeight-59)
             {
                 canvas.Children.Remove(bomb );
@@ -166,15 +161,67 @@ namespace Lab4My
 
         }
 
-        private void CheckFinish()
+        private bool CheckCollision(double bombX, double bombY) //проверка столкновения с целью
         {
-            
+            double targetX = target.GetXTarget();
+            double targetY = target.GetYTarget();
+
+            double hitboxWidth = 200;   
+            double hitboxHeight = 200;
+
+            return bombX >= targetX - hitboxWidth / 2 &&
+           bombX <= targetX + hitboxWidth / 2 &&
+           bombY >= targetY - hitboxHeight / 2 &&
+           bombY <= targetY + hitboxHeight / 2;
+        }
+
+        private void ShowExplosion(double x, double y) //показ взрыва
+        {
+            if (explosion != null)
+                canvas.Children.Remove(explosion);
+
+            explosion = new Airport.UserControl_Exp();
+            explosion.SetExpX(x - 25);
+            explosion.SetExpY(y - 25);
+            canvas.Children.Add(explosion);
+            explosionTimer.Restart();
+        }
+
+        private async void UpdateExplosion() //обновление взрыва async для работы await (подсмотрел в интернете)
+        {
+            if (explosion != null && explosionTimer.ElapsedMilliseconds > EXPLOSION_DURATION)
+            {
+                canvas.Children.Remove(explosion);
+                explosion = null;
+                explosionTimer.Stop();
+                canvas.Children.Remove(target);
+                stopwatch.Stop();
+
+                await Task.Delay(300);
+
+                MessageBoxResult result = MessageBox.Show(
+                "Попадание по цели!!! поздравляю!!!",
+                "Успех",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+                 );
+
+                if (result == MessageBoxResult.OK)
+                {
+                    if (isRenderingSubscribed)
+                    {
+                        CompositionTarget.Rendering -= CompositionTarget_Rendering;
+                        isRenderingSubscribed = false;
+                    }
+                    this.Close();
+                }
+
+            }
         }
 
         private void Buttondropbomb_Click(object sender, RoutedEventArgs e)
         {
             DropBomb();
-            //MessageBox.Show("Бомба создана!");
         }
 
         private void ButtonReset_Click(object sender, RoutedEventArgs e)
@@ -186,7 +233,25 @@ namespace Lab4My
 
         private void ButtonStart_Click(object sender, RoutedEventArgs e)
         {
-            start();
+            if(flStart == false)
+            {
+                flStart = true;
+                start();
+                (sender as Button)?.Content = "Pause";
+            }
+            else
+            {
+                if (stopwatch.IsRunning)
+                {
+                    stopwatch.Stop();
+                    (sender as Button)?.Content = "Start";
+                }
+                else
+                {
+                    stopwatch.Start();
+                    (sender as Button)?.Content = "Pause";
+                }
+            }
         }
 
         private void MainWindow_Closed(object sender, EventArgs e)

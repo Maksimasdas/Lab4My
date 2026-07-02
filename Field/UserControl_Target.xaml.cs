@@ -42,5 +42,15 @@ namespace Airport
             target.Y = y;
             target.UY = y + 10;
         }
+
+        public double GetXTarget()
+        {
+            return target.X;
+        }
+
+        public double GetYTarget()
+        {
+            return target.Y;
+        }
     }
 }
